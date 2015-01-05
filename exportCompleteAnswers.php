@@ -51,19 +51,34 @@ class exportCompleteAnswers extends PluginBase {
             ),
             'default'=>'aseperatecodetext',
         ),
+        'textStringForNull'=>array(
+            'type'=>'string',
+            'label'=>'String for null value for answer text',
+            'default'=>"",
+        ),
+        'codeStringForNull'=>array(
+            'type'=>'string',
+            'label'=>'String for null value for answer code',
+            'default'=>"N/A",
+        ),
+        /* Only for same column */
+        'sameColumnInfo'=>array(
+            'type'=>'info',
+            'content' => '<legend style="display:bock">Options if answer and code are in same columns</legend>',
+        ),
         'exportAnswerCodeBefore'=>array(
             'type'=>'string',
-            'label'=>'String before answer code (only if in same column)',
+            'label'=>'String before answer code',
             'default'=>"[",
         ),
         'exportAnswerCodeAfter'=>array(
             'type'=>'string',
-            'label'=>'String after answer code (only if in same column)',
+            'label'=>'String after answer code',
             'default'=>"]",
         ),
         'exportNullEmptyAnswerCode'=>array(
             'type'=>'select',
-            'label'=>'Export answer condition',
+            'label'=>'Condition for adding string to code',
             'options'=>array(
                 'notempty'=>'If answered or shown',
                 'notnull'=>'If shown to the user', // Not for 2.05 - build 140708
@@ -72,34 +87,29 @@ class exportCompleteAnswers extends PluginBase {
             'default'=>"notnull",
             'help' => 'This settings use code before and after under condition, default adding the string if user see the question (except for numerical and date question).'
         ),
-        'textStringForNull'=>array(
-            'type'=>'string',
-            'label'=>'String for null value for answer text (only if exported)',
-            'default'=>"",
-        ),
-        'codeStringForNull'=>array(
-            'type'=>'string',
-            'label'=>'String for null value for answer code (only if exported)',
-            'default'=>"N/A",
+        /* Only for 2 columns */
+        'differentColumnInfo'=>array(
+            'type'=>'info',
+            'content' => '<legend style="display:bock">Options if answer and code are in seperate columns.</legend><p>Using 2 column only of needed : code and text are different ( example: for list question or array question type, or for multi choice question type).</p>',
         ),
         'beforeHeadColumnCode'=>array(
             'type'=>'string',
-            'label'=>'String before question for answer code column (only for separate columns and if question have different code and text)',
+            'label'=>'String before question for answer code column',
             'default'=>"[code]",
         ),
         'afterHeadColumnCode'=>array(
             'type'=>'string',
-            'label'=>'String after question for answer code column (only for separate columns and if question have different code and text)',
+            'label'=>'String after question for answer code column',
             'default'=>"",
         ),
         'beforeHeadColumnFull'=>array(
             'type'=>'string',
-            'label'=>'String before question for full answer column (only for separate columns and if question have different code and text)',
+            'label'=>'String before question for full answer column',
             'default'=>"",
         ),
         'afterHeadColumnFull'=>array(
             'type'=>'string',
-            'label'=>'String after question for full answer column (only for separate columns)',
+            'label'=>'String after question for full answer column',
             'default'=>"[full answer]",
         ),
     );
