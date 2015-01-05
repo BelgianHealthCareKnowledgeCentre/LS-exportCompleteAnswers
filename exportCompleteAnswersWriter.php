@@ -6,18 +6,18 @@
  * @author Denis Chenu <denis@sondages.pro>
  * @copyright 2014 Denis Chenu <http://sondages.pro>
  * @copyright 2014 Belgian Health Care Knowledge Centre (KCE) <http://kce.fgov.be>
- * @license GPL v3
+ * @license AGPL v3
  * @version 0.9
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU General Affero Public License for more details.
  *
  */
 Yii::import('application.helpers.admin.export.*');
@@ -31,8 +31,16 @@ class exportCompleteAnswersWriter extends CsvWriter {
     public $oldHeadFormat;// To keep the selected head format but use own
     public $oSurvey;
 
+    /**
+    * Initialization method 
+    * Update $oOptions to use own, keep the old headingFormat in $this->oldHeadFormat
+    *
+    * @param Survey $survey
+    * @param mixed $sLanguageCode
+    * @param FormattingOptions $oOptions
+    */
     public function init(\SurveyObj $oSurvey, $sLanguageCode, \FormattingOptions $oOptions) {
-        //parent::init($oSurvey, $sLanguageCode, $oOptions);
+
         $this->sLang=$sLanguageCode;
         // Change filename
         $now=date("Ymd-His");
@@ -60,6 +68,15 @@ class exportCompleteAnswersWriter extends CsvWriter {
         parent::init($oSurvey, $sLanguageCode, $oOptions);
         $this->csvFilename = "results-survey_{$oSurvey->id}_{$now}.csv";
     }
+
+    /**
+    * Returns the adapted heading using parent function
+    *
+    * @param Survey $survey
+    * @param FormattingOptions $oOptions
+    * @param string $fieldName
+    * @return string (or false)
+    */
     public function getFullHeading(SurveyObj $survey, FormattingOptions $oOptions, $fieldName){
         $sQuestion="";
         static $aColumnDone=array();
@@ -111,6 +128,16 @@ class exportCompleteAnswersWriter extends CsvWriter {
         return $sQuestion;
     }
 
+    /**
+    * Performs a transformation of the response value.
+    * Reload the survey to use own value
+    *
+    * @param string $sValue
+    * @param string $fieldType
+    * @param FormattingOptions $oOptions
+    * @param string $sColumn The name of the column
+    * @return string
+    */
     protected function transformResponseValue($sValue, $fieldType, FormattingOptions $oOptions, $sColumn = null)
     {
         static $aColumnDone=array();
@@ -179,7 +206,7 @@ class exportCompleteAnswersWriter extends CsvWriter {
     * Get if field need 1 column only : one for code and one for text. If text and code are same, return true
     * @param string $sFieldType : the field type
     * @param string $sFieldName : the field name
-    * @return string : false/code/text
+    * @return string : NULL/code/text
     */
     public function sameTextAndCode($sFieldType,$sFieldName)
     {
@@ -205,11 +232,7 @@ class exportCompleteAnswersWriter extends CsvWriter {
             return 'text';
         if(in_array($sFieldType,$aCommentType) && substr_compare($sFieldName, "comment", -7, 7) === 0)
             return 'text';
-#        return (   in_array($sFieldType,$aOnlyCode) 
-#                || in_array($sFieldType,$aOnlyText) 
-#                || in_array($sFieldType,$aInfoField)
-#                || (in_array($sFieldType,$aOtherType) && substr_compare($sFieldName, "other", -5, 5) === 0)
-#                || (in_array($sFieldType,$aCommentType) && substr_compare($sFieldName, "comment", -7, 7) === 0)
-#                );
+
+        // default NULL mean we need 2 column
     }
 }
