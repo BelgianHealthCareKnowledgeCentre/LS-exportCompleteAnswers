@@ -80,7 +80,7 @@ class exportCompleteAnswers extends PluginBase {
             'type'=>'select',
             'label'=>'Condition for adding string to code',
             'options'=>array(
-                'notempty'=>'If answered or shown',
+                'notempty'=>'If answered',
                 'notnull'=>'If shown to the user', // Not for 2.05 - build 140708
                 'always'=>'Always',
             ),
