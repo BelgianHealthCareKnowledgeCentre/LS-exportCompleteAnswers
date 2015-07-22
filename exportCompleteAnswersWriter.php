@@ -157,7 +157,7 @@ class exportCompleteAnswersWriter extends CsvWriter {
         else
         {
             $bExportAnswerCode=$this->exportAnswerCode && !self::sameTextAndCode($fieldType,$sColumn);
-            $bExportAnswerText=$this->exportAnswerText;
+            $bExportAnswerText=$this->exportAnswerText || self::sameTextAndCode($fieldType,$sColumn);
         }
         $sAnswerFull="";
         $sAnswerText="";
