@@ -8,13 +8,13 @@ Export complete answers is a plugin for LimeSurvey version up to 2.05. It add a 
 - Clone in plugins/exportCompleteAnswers directory
 
 ### Via ZIP dowload
-- Get the file and uncompress it
+- Get the file at <http://extensions.sondages.pro/IMG/auto/exportCompleteAnswers.zip> and uncompress it 
 - Move the files included to plugins/exportCompleteAnswers directory
 
 ## Home page & Copyright
-- HomePage <http://extensions.sondages.pro/>
-- Copyright © 2014 Denis Chenu <http://sondages.pro>
-- Copyright © 2014 Belgian Health Care Knowledge Centre (KCE) <http://kce.fgov.be>
+- HomePage <http://extensions.sondages.pro/exportcompleteanswers/>
+- Copyright © 2014-2015 Denis Chenu <http://sondages.pro>
+- Copyright © 2014-2015 Belgian Health Care Knowledge Centre (KCE) <http://kce.fgov.be>
 - Licence : GNU General Affero Public License <https://www.gnu.org/licenses/agpl-3.0.html>
 
 
