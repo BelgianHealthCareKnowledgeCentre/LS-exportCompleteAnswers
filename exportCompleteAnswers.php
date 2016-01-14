@@ -4,16 +4,16 @@
  * Export code and complete answer in CSV
  *
  * @author Denis Chenu <denis@sondages.pro>
- * @copyright 2014 Denis Chenu <http://sondages.pro>
- * @copyright 2014 Belgian Health Care Knowledge Centre (KCE) <http://kce.fgov.be>
+ * @copyright 2014-2015 Denis Chenu <http://sondages.pro>
+ * @copyright 2014-2015 Belgian Health Care Knowledge Centre (KCE) <http://kce.fgov.be>
  * @license AGPL v3
- * @version 0.9
+ * @version 0.9.1
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -26,6 +26,11 @@ class exportCompleteAnswers extends PluginBase {
     static protected $description = 'Allow to export code and text for answers. Give some ability to export it the way you want.';
 
     protected $settings = array(
+        'title'=>array(
+            'type'=>'string',
+            'label'=>'Export Name',
+            'default'=>'CSV from exportCompleteAnswers',
+        ),
         'default'=>array(
             'type'=>'boolean',
             'label'=>'Use as default export',
@@ -141,7 +146,7 @@ class exportCompleteAnswers extends PluginBase {
         switch ($type) {
             case 'csv-allanswer':
             default:
-                $event->set('label', gT("CSV with all answers part"));
+                $event->set('label',$this->get('title',null,null,$this->settings['title']['default']));
                 if($this->get('default',null,null,$this->settings['default']['default']))
                     $event->set('default', true);
                 break;

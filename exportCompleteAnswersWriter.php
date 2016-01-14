@@ -4,16 +4,16 @@
  * Writer for the plugin
  *
  * @author Denis Chenu <denis@sondages.pro>
- * @copyright 2014 Denis Chenu <http://sondages.pro>
- * @copyright 2014 Belgian Health Care Knowledge Centre (KCE) <http://kce.fgov.be>
+ * @copyright 2014-2015 Denis Chenu <http://sondages.pro>
+ * @copyright 2014-2015 Belgian Health Care Knowledge Centre (KCE) <http://kce.fgov.be>
  * @license AGPL v3
- * @version 0.9
+ * @version 0.9.1
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -32,7 +32,7 @@ class exportCompleteAnswersWriter extends CsvWriter {
     public $oSurvey;
 
     /**
-    * Initialization method 
+    * Initialization method
     * Update $oOptions to use own, keep the old headingFormat in $this->oldHeadFormat
     *
     * @param Survey $survey
@@ -141,7 +141,7 @@ class exportCompleteAnswersWriter extends CsvWriter {
     protected function transformResponseValue($sValue, $fieldType, FormattingOptions $oOptions, $sColumn = null)
     {
         static $aColumnDone=array();
-
+        // If $sValue is already done for column :; we can take it again, but a lot of memory ....
         if($this->exportAnswerPosition=='aseperatecodetext')
         {
             if(!array_key_exists($sColumn,$aColumnDone)){
@@ -164,6 +164,18 @@ class exportCompleteAnswersWriter extends CsvWriter {
         $sAnswerCode="";
         $oSurvey=$this->oSurvey;// We need survey to get answers ...
 
+        // New event to allow another plugin to do something
+        $oEvent = new PluginEvent('exportCompleteAnswersTransformResponseValue');
+        $oEvent->set('sValue', $sValue);
+        $oEvent->set('fieldType', $fieldType);
+        $oEvent->set('oOptions', $oOptions); // Needed ?
+        $oEvent->set('oSurvey', $oSurvey);
+        App()->getPluginManager()->dispatchEvent($oEvent);
+        $sAnswerFull=$oEvent->get('answerValue');
+        // if $sAnswerFull is done by plugin, return it
+        if(null!==$sAnswerFull)
+            return $sAnswerFull;
+
         if($bExportAnswerCode){
             if(is_null($sValue) )
                 $sAnswerCode=$this->codeStringForNull;
@@ -184,8 +196,8 @@ class exportCompleteAnswersWriter extends CsvWriter {
                 $sAnswerText=$this->textStringForNull;
             else
                 $sAnswerText=Writer::transformResponseValue(
-                                $oSurvey->getFullAnswer($sColumn, $sValue, $this->translator, $this->languageCode), 
-                                $fieldType, 
+                                $oSurvey->getFullAnswer($sColumn, $sValue, $this->translator, $this->languageCode),
+                                $fieldType,
                                 $oOptions,
                                 $sColumn
                                 );
@@ -199,9 +211,10 @@ class exportCompleteAnswersWriter extends CsvWriter {
         }elseif($this->exportAnswerPosition=='atextcode'){
             $sAnswerFull=$sAnswerText.$sAnswerCode;
         }
+
         return $sAnswerFull;
     }
-    
+
     /*
     * Get if field need 1 column only : one for code and one for text. If text and code are same, return true
     * @param string $sFieldType : the field type
@@ -217,7 +230,7 @@ class exportCompleteAnswersWriter extends CsvWriter {
         // No field type, but some can have specific answers (date) : actually no difference
         $aDateField=array("submitdate","startdate","datestamp");
         $aInfoField=array("id","lastpage","startlanguage","ipaddr","refurl");
-        
+
         // Have other question type
         $aOtherType=array("L","M","P","!");
         // Have comment question type
