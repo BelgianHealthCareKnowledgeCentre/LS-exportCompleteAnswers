@@ -20,7 +20,7 @@
  * GNU General Affero Public License for more details.
  *
  */
-class exportCompleteAnswers extends PluginBase {
+class exportCompleteAnswers extends \ls\pluginmanager\PluginBase {
     protected $storage = 'DbStorage';
     static protected $name = 'Export all answers (code and text)';
     static protected $description = 'Allow to export code and text for answers. Give some ability to export it the way you want.';
@@ -119,8 +119,7 @@ class exportCompleteAnswers extends PluginBase {
         ),
     );
 
-    public function __construct(PluginManager $manager, $id) {
-        parent::__construct($manager, $id);
+    public function init() {
         $this->subscribe('beforeActivate');
         $this->subscribe('listExportPlugins');
         $this->subscribe('listExportOptions');
