@@ -13,8 +13,8 @@ Export complete answers is a plugin for LimeSurvey version up to 2.05. It add a 
 
 ## Home page & Copyright
 - HomePage <http://extensions.sondages.pro/exportcompleteanswers/>
-- Copyright © 2014-2015 Denis Chenu <http://sondages.pro>
-- Copyright © 2014-2015 Belgian Health Care Knowledge Centre (KCE) <http://kce.fgov.be>
+- Copyright © 2014-2018 Denis Chenu <http://sondages.pro>
+- Copyright © 2014-2018 Belgian Health Care Knowledge Centre (KCE) <http://kce.fgov.be>
 - Licence : GNU General Affero Public License <https://www.gnu.org/licenses/agpl-3.0.html>
 
 ## Support

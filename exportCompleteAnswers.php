@@ -4,10 +4,10 @@
  * Export code and complete answer in CSV
  *
  * @author Denis Chenu <denis@sondages.pro>
- * @copyright 2014-2015 Denis Chenu <http://sondages.pro>
- * @copyright 2014-2015 Belgian Health Care Knowledge Centre (KCE) <http://kce.fgov.be>
+ * @copyright 2014-2018 Denis Chenu <http://sondages.pro>
+ * @copyright 2014-2018 Belgian Health Care Knowledge Centre (KCE) <http://kce.fgov.be>
  * @license AGPL v3
- * @version 0.9.1
+ * @version 1.0.0
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,7 +20,7 @@
  * GNU General Affero Public License for more details.
  *
  */
-class exportCompleteAnswers extends \ls\pluginmanager\PluginBase {
+class exportCompleteAnswers extends PluginBase {
     protected $storage = 'DbStorage';
     static protected $name = 'Export all answers (code and text)';
     static protected $description = 'Allow to export code and text for answers. Give some ability to export it the way you want.';
@@ -128,14 +128,6 @@ class exportCompleteAnswers extends \ls\pluginmanager\PluginBase {
     public function beforeActivate()
     {
         $oEvent = $this->getEvent();
-        if (class_exists('exportCodeAndText', false)) {
-            $test=get_class_vars('exportCodeAndText');
-            if(!isset($test['version']) || $test['version']<2.2)
-            {
-                $oEvent->set('success', false);
-                $oEvent->set('message', gt('This plugin can not be activated if exportCodeAndText plugin less than 2.2 version.')."<pre>".print_r($test,1)."</pre>");
-            }
-        }
     }
     public function listExportOptions()
     {
@@ -146,8 +138,9 @@ class exportCompleteAnswers extends \ls\pluginmanager\PluginBase {
             case 'csv-allanswer':
             default:
                 $event->set('label',$this->get('title',null,null,$this->settings['title']['default']));
-                if($this->get('default',null,null,$this->settings['default']['default']))
+                if($this->get('default',null,null,$this->settings['default']['default'])) {
                     $event->set('default', true);
+                }
                 break;
         }
     }
