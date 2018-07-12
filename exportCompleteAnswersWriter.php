@@ -4,10 +4,10 @@
  * Writer for the plugin
  *
  * @author Denis Chenu <denis@sondages.pro>
- * @copyright 2014-2015 Denis Chenu <http://sondages.pro>
- * @copyright 2014-2015 Belgian Health Care Knowledge Centre (KCE) <http://kce.fgov.be>
+ * @copyright 2014-2018 Denis Chenu <http://sondages.pro>
+ * @copyright 2014-2018 Belgian Health Care Knowledge Centre (KCE) <http://kce.fgov.be>
  * @license AGPL v3
- * @version 0.9.1
+ * @version 1.0.0
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,7 +20,6 @@
  * GNU General Affero Public License for more details.
  *
  */
-Yii::import('application.helpers.admin.export.*');
 class exportCompleteAnswersWriter extends CsvWriter {
 
     public $fieldmap = null;
@@ -49,16 +48,13 @@ class exportCompleteAnswersWriter extends CsvWriter {
         $this->oldHeadFormat=$oOptions->headingFormat;
         $oOptions->headingFormat = "full";      // force to use own code
         $oOptions->answerFormat = "short";      // force to use own code
-        if($this->exportAnswerPosition=='aseperatecodetext' && $this->exportAnswerCode && $this->exportAnswerText)
-        {
+        if($this->exportAnswerPosition=='aseperatecodetext' && $this->exportAnswerCode && $this->exportAnswerText) {
             // Need to double some $oOptions->selectedColumns
             $aSelectedColumns=array();
-            foreach($oOptions->selectedColumns as $sSelectedColumns)
-            {
+            foreach($oOptions->selectedColumns as $sSelectedColumns) {
                 $aSelectedColumns[]=$sSelectedColumns;
                 $sFieldType=$oSurvey->fieldMap[$sSelectedColumns]['type'];
-                if( !self::sameTextAndCode($sFieldType,$sSelectedColumns))
-                {
+                if( !self::sameTextAndCode($sFieldType,$sSelectedColumns)) {
                     $aSelectedColumns[]=$sSelectedColumns;
                 }
 
@@ -173,45 +169,50 @@ class exportCompleteAnswersWriter extends CsvWriter {
         App()->getPluginManager()->dispatchEvent($oEvent);
         $sAnswerFull=$oEvent->get('answerValue');
         // if $sAnswerFull is done by plugin, return it
-        if(null!==$sAnswerFull)
+        if(null!==$sAnswerFull) {
             return $sAnswerFull;
+        }
 
-        if($bExportAnswerCode){
-            if(is_null($sValue) )
+        if($bExportAnswerCode) {
+            if(is_null($sValue) ) {
                 $sAnswerCode=$this->codeStringForNull;
-            else
+            } else {
                 $sAnswerCode=Writer::transformResponseValue($sValue,$fieldType,$oOptions,$sColumn);
+            }
             if( $sValue!=""
                 || ( $sValue==="" && $this->exportNullEmptyAnswerCode!="notempty" )
                 || (is_null($sValue) && $this->exportNullEmptyAnswerCode=="always" )
-               )
-            {
-                if($this->exportAnswerPosition!='aseperatecodetext')
+               ) {
+                if($this->exportAnswerPosition!='aseperatecodetext') {
                     $sAnswerCode= $this->exportAnswerCodeBefore.$sAnswerCode.$this->exportAnswerCodeAfter;
+                }
             }
         }
-        if($bExportAnswerText)
-        {
-            if(is_null($sValue))
+        if($bExportAnswerText)  {
+            if(is_null($sValue)) {
                 $sAnswerText=$this->textStringForNull;
-            else
+            } else {
                 $sAnswerText=Writer::transformResponseValue(
-                                $oSurvey->getFullAnswer($sColumn, $sValue, $this->translator, $this->languageCode),
-                                $fieldType,
-                                $oOptions,
-                                $sColumn
-                                );
+                    $oSurvey->getFullAnswer($sColumn, $sValue, $this->translator, $this->languageCode),
+                    $fieldType,
+                    $oOptions,
+                    $sColumn
+                );
                 // Remove not needed N/A ....
                 $aNaType=array('Y','G','M','P');
-                if(in_array($fieldType,$aNaType) && $sAnswerText=="N/A")
+                if(in_array($fieldType,$aNaType) && $sAnswerText=="N/A") {
                     $sAnswerText="";
+                }
+            }
         }
-        if($this->exportAnswerPosition=='acodetext'){
-            $sAnswerFull=$sAnswerCode.$sAnswerText;
-        }elseif($this->exportAnswerPosition=='atextcode'){
-            $sAnswerFull=$sAnswerText.$sAnswerCode;
+        switch($this->exportAnswerPosition) {
+            case 'atextcode':
+                $sAnswerFull=$sAnswerText.$sAnswerCode;
+                break;
+            case 'acodetext':
+            default: // aseperatecodetext
+                $sAnswerFull=$sAnswerCode.$sAnswerText;
         }
-
         return $sAnswerFull;
     }
 
@@ -219,7 +220,7 @@ class exportCompleteAnswersWriter extends CsvWriter {
     * Get if field need 1 column only : one for code and one for text. If text and code are same, return true
     * @param string $sFieldType : the field type
     * @param string $sFieldName : the field name
-    * @return string : NULL/code/text
+    * @return string|boolean : false ('code','text')
     */
     public function sameTextAndCode($sFieldType,$sFieldName)
     {
@@ -229,23 +230,30 @@ class exportCompleteAnswersWriter extends CsvWriter {
         $aOnlyText=array("K","N","Q","S","T","U","X",'*',';',':',"|");
         // No field type, but some can have specific answers (date) : actually no difference
         $aDateField=array("submitdate","startdate","datestamp");
-        $aInfoField=array("id","lastpage","startlanguage","ipaddr","refurl");
+        $aInfoField=array("id","lastpage","startlanguage","ipaddr","refurl","seed");
 
         // Have other question type
         $aOtherType=array("L","M","P","!");
         // Have comment question type
         $aCommentType=array("O","P");
-        if(in_array($sFieldType,$aOnlyCode))
+        if(in_array($sFieldType,$aOnlyCode)) {
             return 'code';
-        if(in_array($sFieldType,$aOnlyText))
+        }
+        if(in_array($sFieldType,$aOnlyText)) {
             return 'text';
-        if(in_array($sFieldName,$aInfoField) || in_array($sFieldName,$aDateField))
-            return 'text';// 'code'
-        if(in_array($sFieldType,$aOtherType) && substr_compare($sFieldName, "other", -5, 5) === 0)
+        }
+        if(in_array($sFieldName,$aInfoField)) {
+            return 'text';// 'code' ?
+        }
+        if(in_array($sFieldName,$aDateField)) {
             return 'text';
-        if(in_array($sFieldType,$aCommentType) && substr_compare($sFieldName, "comment", -7, 7) === 0)
+        }
+        if(in_array($sFieldType,$aOtherType) && substr_compare($sFieldName, "other", -5, 5) === 0) {
             return 'text';
-
-        // default NULL mean we need 2 column
+        }
+        if(in_array($sFieldType,$aCommentType) && substr_compare($sFieldName, "comment", -7, 7) === 0) {
+            return 'text';
+        }
+        return false; // default NULL mean we need 2 column
     }
 }
